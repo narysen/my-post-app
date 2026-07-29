@@ -49,14 +49,12 @@ export default function PostDetailPage() {
     );
   }
 
-  // Helper to resolve image URLs for GitHub Pages subpath
+  // Helper to force absolute path resolution from root BASE_URL
   const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
-    if (url.startsWith("/")) {
-      return `${import.meta.env.BASE_URL}${url.slice(1)}`;
-    }
-    return `${import.meta.env.BASE_URL}${url}`;
+    const cleanPath = url.replace(/^\/+/, "");
+    return `${import.meta.env.BASE_URL}${cleanPath}`;
   };
 
   return (
