@@ -29,7 +29,13 @@ export default function HomePage() {
 
   // Helper to check post.imageUrl first, then fallback to parsing HTML content
   const extractThumbnail = (post) => {
-    if (post.imageUrl) return post.imageUrl;
+    if (post.imageUrl) {
+      // Automatically map absolute root paths to Vite's sub-path base for GitHub Pages
+      if (post.imageUrl.startsWith("/")) {
+        return `${import.meta.env.BASE_URL}${post.imageUrl.slice(1)}`;
+      }
+      return post.imageUrl;
+    }
     const doc = new DOMParser().parseFromString(post.content, "text/html");
     const img = doc.querySelector("img");
     return img ? img.src : null;
