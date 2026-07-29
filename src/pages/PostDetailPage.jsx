@@ -47,6 +47,15 @@ export default function PostDetailPage() {
     );
   }
 
+  // Helper to resolve image URLs for GitHub Pages
+  const resolveImageUrl = (url) => {
+    if (!url) return "";
+    if (url.startsWith("/")) {
+      return `${import.meta.env.BASE_URL}${url.slice(1)}`;
+    }
+    return url;
+  };
+
   return (
     <article className="max-w-4xl mx-auto my-6 p-6 md:p-10 bg-white rounded-2xl border border-gray-200 shadow-sm space-y-8 overflow-hidden">
       {/* Navigation Header */}
@@ -59,7 +68,11 @@ export default function PostDetailPage() {
       {/* Featured Thumbnail Image */}
       {post.imageUrl && (
         <div className="h-72 md:h-96 w-full bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
-          <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
+          <img 
+            src={resolveImageUrl(post.imageUrl)} 
+            alt={post.title} 
+            className="w-full h-full object-cover" 
+          />
         </div>
       )}
 
