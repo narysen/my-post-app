@@ -1,20 +1,14 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <title>My Post App</title>
-    <script type="text/javascript">
-      var pathSegmentsToKeep = 1; 
-      var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?p=/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/') +
-        (l.search ? '&q=' + l.search.slice(1) : '') +
-        l.hash
-      );
-    </script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>my-react-app</title>
+    <script type="module" crossorigin src="/assets/index-Dr7-HWln.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DZEy0BBy.css">
   </head>
   <body>
+    <div id="root"></div>
   </body>
 </html>
