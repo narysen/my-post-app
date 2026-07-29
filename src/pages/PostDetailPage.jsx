@@ -47,7 +47,7 @@ export default function PostDetailPage() {
     );
   }
 
-  // Helper to resolve image URLs for GitHub Pages
+  // Helper to correctly resolve image paths for GitHub Pages subpath
   const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("/")) {
