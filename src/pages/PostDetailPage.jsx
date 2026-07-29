@@ -47,13 +47,14 @@ export default function PostDetailPage() {
     );
   }
 
-  // Helper to correctly resolve image paths for GitHub Pages subpath
+  // Consistent resolver matching your working HomePage logic
   const resolveImageUrl = (url) => {
     if (!url) return "";
+    if (url.startsWith("http") || url.startsWith("blob")) return url;
     if (url.startsWith("/")) {
       return `${import.meta.env.BASE_URL}${url.slice(1)}`;
     }
-    return url;
+    return `${import.meta.env.BASE_URL}${url}`;
   };
 
   return (
