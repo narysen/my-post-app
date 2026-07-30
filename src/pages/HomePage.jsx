@@ -27,7 +27,7 @@ export default function HomePage() {
     fetchPublicPosts();
   }, []);
 
-  // Helper to check post.imageUrl first, then fallback to parsing HTML content
+// Helper to check post.imageUrl first, then fallback to parsing HTML content
   const extractThumbnail = (post) => {
     if (post.imageUrl) {
       if (post.imageUrl.startsWith("http://") || post.imageUrl.startsWith("https://")) {
@@ -36,7 +36,7 @@ export default function HomePage() {
       
       const cleanPath = post.imageUrl.replace(/^\/+/, "");
       
-      // Robust base name path resolution for GitHub Pages sub-paths
+      // Force repository base path for GitHub Pages deployment
       const repoBase = window.location.hostname.includes("github.io") ? "/my-post-app/" : "/";
       const base = import.meta.env.BASE_URL && import.meta.env.BASE_URL !== "/" 
         ? import.meta.env.BASE_URL 
