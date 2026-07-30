@@ -35,11 +35,15 @@ export default function HomePage() {
       }
       
       const cleanPath = post.imageUrl.replace(/^\/+/, "");
-      const base = import.meta.env.BASE_URL.endsWith("/") 
+      
+      // Robust base name path resolution for GitHub Pages sub-paths
+      const repoBase = window.location.hostname.includes("github.io") ? "/my-post-app/" : "/";
+      const base = import.meta.env.BASE_URL && import.meta.env.BASE_URL !== "/" 
         ? import.meta.env.BASE_URL 
-        : `${import.meta.env.BASE_URL}/`;
+        : repoBase;
         
-      return `${base}${cleanPath}`;
+      const formattedBase = base.endsWith("/") ? base : `${base}/`;
+      return `${formattedBase}${cleanPath}`;
     }
     
     if (!post.content) return null;
