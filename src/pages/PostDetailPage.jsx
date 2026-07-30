@@ -53,17 +53,18 @@ const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
     
-    // Ensure base url has a trailing slash
+    // Ensure BASE_URL doesn't have a trailing slash if url starts with one
     const baseUrl = import.meta.env.BASE_URL.endsWith("/") 
-      ? import.meta.env.BASE_URL 
-      : `${import.meta.env.BASE_URL}/`;
-      
-    const formattedUrl = url.startsWith("/") ? url : `/${url}`;
-    const cleanPath = formattedUrl.replace(/^\/+/, "");
-    
-    return `${baseUrl}${cleanPath}`;
-  };
+      ? import.meta.env.BASE_URL.slice(0, -1) 
+      : import.meta.env.BASE_URL;
 
+    // If url starts with a slash, join it directly with the base path
+    if (url.startsWith("/")) {
+      return `${baseUrl}${url}`;
+    }
+    
+    return `${baseUrl}/${url}`;
+  };
   // Preprocessor for inline HTML content images
   const fixHtmlImages = (html) => {
     if (!html) return "";
