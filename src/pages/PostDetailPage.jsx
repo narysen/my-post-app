@@ -53,13 +53,15 @@ const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
 
-    // Clean up the URL path and strip any leading slashes or relative tags
+    // Clean up leading slashes or relative tags to get just the filename
     const cleanPath = url.replace(/^(\.\/|\/)+/, "");
     
-    // Automatically extract the GitHub Pages repository base path or root domain
-    const basePath = import.meta.env.BASE_URL; // e.g., "/my-post-app/"
-    
-    return `${window.location.origin}${basePath}${cleanPath}`;
+    // import.meta.env.BASE_URL correctly evaluates to "/my-post-app/" during build/deploy
+    const baseUrl = import.meta.env.BASE_URL.endsWith("/") 
+      ? import.meta.env.BASE_URL 
+      : `${import.meta.env.BASE_URL}/`;
+      
+    return `${baseUrl}${cleanPath}`;
   };
   // Preprocessor for inline HTML content images
   const fixHtmlImages = (html) => {
