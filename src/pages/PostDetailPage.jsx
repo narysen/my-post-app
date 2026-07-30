@@ -53,10 +53,7 @@ const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
 
-    // Extract just the filename (e.g., "catiee.jpeg")
     const fileName = url.split("/").pop();
-
-    // Force absolute path resolution from the domain root + repo base path
     return `/my-post-app/${fileName}`;
   };
   // Preprocessor for inline HTML content images
