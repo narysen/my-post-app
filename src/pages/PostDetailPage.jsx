@@ -53,14 +53,14 @@ const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
 
-    // Remove any leading slashes, dots, or 'post/' segments so we just get the filename (e.g., "catiee.jpeg")
-    const cleanFileName = url.replace(/^(\.\/|\/)+/, "").replace(/^post\//, "");
-    
-    const baseUrl = import.meta.env.BASE_URL.endsWith("/") 
-      ? import.meta.env.BASE_URL 
-      : `${import.meta.env.BASE_URL}/`;
-      
-    return `${baseUrl}${cleanFileName}`;
+    // Get just the filename (e.g., "catiee.jpeg") and strip any accidental paths
+    const fileName = url.split("/").pop();
+
+    // Use Vite's base URL path safely
+    const base = import.meta.env.BASE_URL || "/";
+    const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+
+    return `${normalizedBase}${fileName}`;
   };
   // Preprocessor for inline HTML content images
   const fixHtmlImages = (html) => {
