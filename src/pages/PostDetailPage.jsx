@@ -49,13 +49,25 @@ export default function PostDetailPage() {
     );
   }
 
-const resolveImageUrl = (url) => {
-    if (!url) return "";
+  const resolveImageUrl = (url) => {
+    if (!url || url === id || url.length < 3) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
 
     const fileName = url.split("/").pop();
-    return `/my-post-app/${fileName}`;
+    if (!fileName || fileName === id) return "";
+
+    const repoBase = window.location.hostname.includes("github.io") ? "/my-post-app" : "";
+    let base = import.meta.env.BASE_URL && import.meta.env.BASE_URL !== "/" 
+      ? import.meta.env.BASE_URL 
+      : repoBase;
+      
+    if (base.endsWith("/")) {
+      base = base.slice(0, -1);
+    }
+    
+    return `${base}/${fileName}`;
   };
+
   // Preprocessor for inline HTML content images
   const fixHtmlImages = (html) => {
     if (!html) return "";
@@ -70,6 +82,9 @@ const resolveImageUrl = (url) => {
     return docParser.body.innerHTML;
   };
 
+  const authorDisplay = post.authorName || post.author || post.userName || (post.authorEmail ? post.authorEmail.split('@')[0] : "Anonymous");
+  const resolvedThumbnail = resolveImageUrl(post.imageUrl);
+
   return (
     <article className="max-w-4xl mx-auto my-6 p-6 md:p-10 bg-white rounded-2xl border border-gray-200 shadow-sm space-y-8 overflow-hidden">
       {/* Navigation Header */}
@@ -83,10 +98,10 @@ const resolveImageUrl = (url) => {
       </div>
 
       {/* Featured Thumbnail Image */}
-      {post.imageUrl && (
+      {resolvedThumbnail && (
         <div className="h-72 md:h-96 w-full bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
           <img 
-            src={resolveImageUrl(post.imageUrl)} 
+            src={resolvedThumbnail} 
             alt={post.title} 
             className="w-full h-full object-cover" 
           />
@@ -100,7 +115,7 @@ const resolveImageUrl = (url) => {
         </h1>
         <div className="text-xs md:text-sm text-gray-500 flex flex-wrap justify-between items-center gap-2 pt-2">
           <span className="font-medium">
-            Author: <strong className="text-gray-700">{post.authorEmail}</strong>
+            Author: <strong className="text-gray-700">{authorDisplay}</strong>
           </span>
           {post.createdAt?.toDate && (
             <span>
