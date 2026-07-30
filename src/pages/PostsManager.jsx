@@ -57,7 +57,7 @@ export default function PostsManager({ user }) {
     setViewMode("form");
   }
 
-  // Handle Save (Create or Update)
+  // Handle Save (Create or Update) - now includes imageUrl support
   async function handleSavePost(formData) {
     try {
       if (editingPost) {
@@ -65,12 +65,14 @@ export default function PostsManager({ user }) {
         await updateDoc(postDoc, {
           title: formData.title,
           content: formData.content,
+          imageUrl: formData.imageUrl || "",
           updatedAt: serverTimestamp(),
         });
       } else {
         await addDoc(postsRef, {
           title: formData.title,
           content: formData.content,
+          imageUrl: formData.imageUrl || "",
           authorEmail: user?.email || "Admin",
           createdAt: serverTimestamp(),
         });
