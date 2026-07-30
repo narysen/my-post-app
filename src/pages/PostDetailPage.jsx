@@ -49,16 +49,18 @@ export default function PostDetailPage() {
     );
   }
 
-  // Safe helper to force absolute path resolution from root BASE_URL without double slashes
-  const resolveImageUrl = (url) => {
+const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
     
+    // Ensure base url has a trailing slash
     const baseUrl = import.meta.env.BASE_URL.endsWith("/") 
       ? import.meta.env.BASE_URL 
       : `${import.meta.env.BASE_URL}/`;
       
-    const cleanPath = url.replace(/^\/+/, "");
+    const formattedUrl = url.startsWith("/") ? url : `/${url}`;
+    const cleanPath = formattedUrl.replace(/^\/+/, "");
+    
     return `${baseUrl}${cleanPath}`;
   };
 
