@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../lib/firebaseClient";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { StatCard, RecentPostsTable } from "../components/DashboardComponents";
 
 export default function AdminPortalPage({ user }) {
@@ -18,7 +18,6 @@ export default function AdminPortalPage({ user }) {
     async function fetchAdminStats() {
       setLoading(true);
       try {
-        // Fetch all posts to calculate accurate stats
         const postsRef = collection(db, "posts");
         const q = query(postsRef, orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
@@ -27,19 +26,31 @@ export default function AdminPortalPage({ user }) {
           ...doc.data(),
         }));
 
-        // Calculate Real Data Statistics
         const total = postsData.length;
-        const myCount = postsData.filter((p) => p.authorEmail === user?.email).length;
         
-        // Count how many posts have at least one <img> tag in their HTML content
+        // Flexible check to match posts authored by user across different fields
+        const userEmail = user?.email?.toLowerCase();
+        const userName = user?.displayName?.toLowerCase() || (userEmail ? userEmail.split('@')[0] : "");
+        
+        const myCount = postsData.filter((p) => {
+          const pEmail = p.authorEmail?.toLowerCase() || "";
+          const pName = p.authorName?.toLowerCase() || p.author?.toLowerCase() || "";
+          const pUser = p.userName?.toLowerCase() || "";
+          
+          return (
+            (userEmail && pEmail === userEmail) ||
+            (userName && (pName.includes(userName) || pUser.includes(userName)))
+          );
+        }).length;
+        
         const withImages = postsData.filter((p) => {
+          if (p.imageUrl) return true;
           if (!p.content) return false;
           const parser = new DOMParser();
           const doc = parser.parseFromString(p.content, "text/html");
           return doc.querySelector("img") !== null;
         }).length;
 
-        // Determine latest published date string
         let latestDate = "No posts yet";
         if (postsData.length > 0 && postsData[0].createdAt?.toDate) {
           latestDate = postsData[0].createdAt.toDate().toLocaleDateString();
@@ -52,7 +63,6 @@ export default function AdminPortalPage({ user }) {
           lastPostDate: latestDate,
         });
 
-        // Take top 5 latest posts for the preview table
         setRecentPosts(postsData.slice(0, 5));
       } catch (error) {
         console.error("Error loading admin stats:", error);
