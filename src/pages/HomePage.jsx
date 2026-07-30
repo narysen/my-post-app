@@ -27,7 +27,7 @@ export default function HomePage() {
     fetchPublicPosts();
   }, []);
 
-// Helper to check post.imageUrl first, then fallback to parsing HTML content
+  // Helper to check post.imageUrl first, then fallback to parsing HTML content
   const extractThumbnail = (post) => {
     if (post.imageUrl) {
       if (post.imageUrl.startsWith("http://") || post.imageUrl.startsWith("https://")) {
@@ -36,20 +36,41 @@ export default function HomePage() {
       
       const cleanPath = post.imageUrl.replace(/^\/+/, "");
       
-      // Force repository base path for GitHub Pages deployment
-      const repoBase = window.location.hostname.includes("github.io") ? "/my-post-app/" : "/";
-      const base = import.meta.env.BASE_URL && import.meta.env.BASE_URL !== "/" 
+      // Compute correct base relative to router path or window location origin
+      const repoBase = window.location.hostname.includes("github.io") ? "/my-post-app" : "";
+      let base = import.meta.env.BASE_URL && import.meta.env.BASE_URL !== "/" 
         ? import.meta.env.BASE_URL 
         : repoBase;
         
-      const formattedBase = base.endsWith("/") ? base : `${base}/`;
-      return `${formattedBase}${cleanPath}`;
+      if (base.endsWith("/")) {
+        base = base.slice(0, -1);
+      }
+      
+      return `${base}/${cleanPath}`;
     }
     
     if (!post.content) return null;
     const doc = new DOMParser().parseFromString(post.content, "text/html");
     const img = doc.querySelector("img");
-    return img ? img.src : null;
+    
+    if (img && img.getAttribute("src")) {
+      let src = img.getAttribute("src");
+      if (src.startsWith("http://") || src.startsWith("https://")) {
+        return src;
+      }
+      const cleanSrc = src.replace(/^\/+/, "");
+      const repoBase = window.location.hostname.includes("github.io") ? "/my-post-app" : "";
+      let base = import.meta.env.BASE_URL && import.meta.env.BASE_URL !== "/" 
+        ? import.meta.env.BASE_URL 
+        : repoBase;
+        
+      if (base.endsWith("/")) {
+        base = base.slice(0, -1);
+      }
+      return `${base}/${cleanSrc}`;
+    }
+    
+    return null;
   };
 
   const extractSnippet = (html) => {
