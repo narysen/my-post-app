@@ -53,14 +53,11 @@ const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
 
-    // Get just the filename (e.g., "catiee.jpeg") and strip any accidental paths
+    // Extract just the filename (e.g., "catiee.jpeg")
     const fileName = url.split("/").pop();
 
-    // Use Vite's base URL path safely
-    const base = import.meta.env.BASE_URL || "/";
-    const normalizedBase = base.endsWith("/") ? base : `${base}/`;
-
-    return `${normalizedBase}${fileName}`;
+    // Force absolute path resolution from the domain root + repo base path
+    return `/my-post-app/${fileName}`;
   };
   // Preprocessor for inline HTML content images
   const fixHtmlImages = (html) => {
