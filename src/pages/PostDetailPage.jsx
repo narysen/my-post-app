@@ -52,18 +52,14 @@ export default function PostDetailPage() {
 const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
-    
-    // Ensure BASE_URL doesn't have a trailing slash if url starts with one
-    const baseUrl = import.meta.env.BASE_URL.endsWith("/") 
-      ? import.meta.env.BASE_URL.slice(0, -1) 
-      : import.meta.env.BASE_URL;
 
-    // If url starts with a slash, join it directly with the base path
-    if (url.startsWith("/")) {
-      return `${baseUrl}${url}`;
-    }
+    // Clean up the URL path and strip any leading slashes or relative tags
+    const cleanPath = url.replace(/^(\.\/|\/)+/, "");
     
-    return `${baseUrl}/${url}`;
+    // Automatically extract the GitHub Pages repository base path or root domain
+    const basePath = import.meta.env.BASE_URL; // e.g., "/my-post-app/"
+    
+    return `${window.location.origin}${basePath}${cleanPath}`;
   };
   // Preprocessor for inline HTML content images
   const fixHtmlImages = (html) => {
