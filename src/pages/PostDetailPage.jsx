@@ -53,15 +53,14 @@ const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
 
-    // Clean up leading slashes or relative tags to get just the filename
-    const cleanPath = url.replace(/^(\.\/|\/)+/, "");
+    // Remove any leading slashes, dots, or 'post/' segments so we just get the filename (e.g., "catiee.jpeg")
+    const cleanFileName = url.replace(/^(\.\/|\/)+/, "").replace(/^post\//, "");
     
-    // import.meta.env.BASE_URL correctly evaluates to "/my-post-app/" during build/deploy
     const baseUrl = import.meta.env.BASE_URL.endsWith("/") 
       ? import.meta.env.BASE_URL 
       : `${import.meta.env.BASE_URL}/`;
       
-    return `${baseUrl}${cleanPath}`;
+    return `${baseUrl}${cleanFileName}`;
   };
   // Preprocessor for inline HTML content images
   const fixHtmlImages = (html) => {
