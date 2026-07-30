@@ -49,12 +49,31 @@ export default function PostDetailPage() {
     );
   }
 
-  // Helper to force absolute path resolution from root BASE_URL
+  // Safe helper to force absolute path resolution from root BASE_URL without double slashes
   const resolveImageUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http") || url.startsWith("blob")) return url;
+    
+    const baseUrl = import.meta.env.BASE_URL.endsWith("/") 
+      ? import.meta.env.BASE_URL 
+      : `${import.meta.env.BASE_URL}/`;
+      
     const cleanPath = url.replace(/^\/+/, "");
-    return `${import.meta.env.BASE_URL}${cleanPath}`;
+    return `${baseUrl}${cleanPath}`;
+  };
+
+  // Preprocessor for inline HTML content images
+  const fixHtmlImages = (html) => {
+    if (!html) return "";
+    const docParser = new DOMParser().parseFromString(html, "text/html");
+    const imgs = docParser.querySelectorAll("img");
+    imgs.forEach((img) => {
+      const src = img.getAttribute("src");
+      if (src && !src.startsWith("http") && !src.startsWith("blob")) {
+        img.setAttribute("src", resolveImageUrl(src));
+      }
+    });
+    return docParser.body.innerHTML;
   };
 
   return (
@@ -124,7 +143,7 @@ export default function PostDetailPage() {
           [&_blockquote]:border-l-4 [&_blockquote]:border-blue-500 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_blockquote]:my-4
           [&_a]:text-blue-600 [&_a]:underline
         "
-        dangerouslySetInnerHTML={{ __html: post.content }}
+        dangerouslySetInnerHTML={{ __html: fixHtmlImages(post.content) }}
       />
     </article>
   );
